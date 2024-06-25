@@ -10,8 +10,8 @@ export const config = {
 };
 
 export function middleware(req: NextRequest) {
-  if (
-    req.nextUrl.pathname.indexOf("icon") > -1 ||
+  if (ฝ
+    req.nextUrl.pathname.indexOf("icon") > -1 ||   //<-- เช็คว่าถ้า path เป็น /icon หรือ /chrome ก็จะผ่านได้ปกติ สองอันนี้ไม่จำเป็นต้องใส่ก็ได้ถ้าเราไม่มี path นี้
     req.nextUrl.pathname.indexOf("chrome") > -1
   )
     return NextResponse.next();

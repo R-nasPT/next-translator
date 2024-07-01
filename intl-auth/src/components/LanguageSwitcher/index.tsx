@@ -5,7 +5,7 @@ import { useLocale } from "next-intl";
 
 export default function LanguageSwitcher() {
   const pathname = usePathname();
-  const locale = useLocale()
+  const locale = useLocale() //<-- เช็คภาษาของ browser
 
   return (
     <div className="flex gap-3">

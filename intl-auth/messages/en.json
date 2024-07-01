@@ -1,0 +1,14 @@
+{
+    "INDEX": {
+        "ROOT_PAGE": "Root Page",
+        "GO_TO_HOMEPAGE": "Go to Home Page",
+        "WELCOME": "Welcome Back, Please login to your account",
+        "HOMEPAGE": "Home Page",
+        "GO_TO_ROOTPAGE": "Go to Root Page"
+    },
+    "ERROR_MESSAGE": {
+        "LOGIN_FAIL": "Login Fail",
+        "REQUIRE_EMAIL": "Please enter a valid email address",
+        "REQUIRE_PASSWORD": "Please enter your password."
+    }
+}

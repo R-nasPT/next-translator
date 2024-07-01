@@ -1,0 +1,14 @@
+{
+    "INDEX": {
+        "ROOT_PAGE": "หน้าแรก",
+        "GO_TO_HOMEPAGE": "ไปที่หน้า Home Page",
+        "WELCOME": "ยินดีต้อนรับกลับมา กรุณาเข้าสู่ระบบเพื่อเข้าใช้งานบัญชีของคุณ",
+        "HOMEPAGE": "โฮมเพจ",
+        "GO_TO_ROOTPAGE": "ไปที่หน้าแรก"
+    },
+    "ERROR_MESSAGE": {
+        "LOGIN_FAIL": "ไม่สามารถ login ได้",
+        "REQUIRE_EMAIL": "กรุณาใส่อีเมล์ให้ถูกต้อง",
+        "REQUIRE_PASSWORD": "กรุณาใส่ Password ให้ถูกต้อง"
+    }
+}

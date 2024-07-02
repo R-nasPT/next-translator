@@ -47,8 +47,8 @@ export default function Login() {
 
   return (
     <main className="md:flex md:bg-[#355b3e] justify-center items-center h-screen">
-      <section className="bg-white md:flex md:rounded-2xl md:w-4/5 2xl:h-3/4 overflow-hidden">
-        <div className="">
+      <section className="bg-white md:flex md:rounded-2xl md:w-[80%] overflow-hidden lg:h-5/6">
+        <div className="md:w-1/2">
           <header className="flex justify-center md:justify-start p-7 bg-[#355b3e] md:bg-inherit gap-5 items-center font-semibold text-white md:text-[#355B3E] text-[32px]">
             <Image
               src={`https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSyE19FzcWoN9taTpsvvjmWhc07WzAy2sMuCQ&s`}
@@ -114,8 +114,9 @@ export default function Login() {
             </form>
           </div>
         </div>
-        <picture className="hidden md:block w-[90%]">
+        <picture className="hidden relative md:block w-[70%]">
           <Image
+            layout="fill"
             src={mainPicture}
             className="w-full h-full object-cover"
             alt="main picture"

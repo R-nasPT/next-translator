@@ -11,7 +11,7 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "@/navigation";
 import Loading from "@/assets/login/loading";
-import InputField from "@/components/common/input/InputField";
+import InputField from "@/components/common/input/input-field";
 
 type FormData = z.infer<typeof loginSchema>;
 

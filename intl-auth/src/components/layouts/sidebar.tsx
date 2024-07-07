@@ -2,7 +2,8 @@
 import { usePathname } from "@/navigation";
 import { useState } from "react";
 
-const publicRoutes = ["/"];
+// สมมติว่าเรามีรายการของเส้นทาง public
+const publicRoutes = ['/login', '/register', '/about', '/contact'];
 
 const isPublicRoute = (pathname: string) => {
   return publicRoutes.includes(pathname);
@@ -12,10 +13,12 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
 
+   // ถ้าเป็นเส้นทาง public ให้ return null (ไม่แสดง Sidebar)
   if (isPublicRoute(pathname)) {
     return <>{children}</>;
   }
 
+  // ถ้าไม่ใช่เส้นทาง public ให้แสดง Sidebar ตามปกติ
   return (
     <div className="flex h-screen">
       {/* Sidebar - แสดงตลอดเวลาบนหน้าจอใหญ่, สไลด์บนหน้าจอเล็ก */}

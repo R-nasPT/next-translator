@@ -1,7 +1,8 @@
 import Login from "@/components/auth/login";
 import { getTranslations } from "next-intl/server";
+import { withLocale } from '@/utils/withLocale';
 
-export default async function Home() {
+async function Home() {
   const t = await getTranslations("INDEX");
   return (
     <>
@@ -9,3 +10,5 @@ export default async function Home() {
     </>
   );
 }
+
+export default withLocale(Home);

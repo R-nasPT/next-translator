@@ -14,7 +14,9 @@ export default async function Providers({ children, locale }: ProvidersProps) {
   return (
     <NextIntlClientProvider messages={messages} locale={locale}>
       <SessionProvider>
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <ReactQueryProvider>
+          {children}
+        </ReactQueryProvider>
       </SessionProvider>
     </NextIntlClientProvider>
   );

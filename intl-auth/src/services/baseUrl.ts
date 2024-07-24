@@ -1,6 +1,4 @@
 import axios from "axios";
-import { getToken } from "next-auth/jwt";
-import { useMemo } from "react";
 
 //สามารถ ใส่ token ได้หลายวิธี
 

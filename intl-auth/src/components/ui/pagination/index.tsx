@@ -8,10 +8,9 @@ interface PaginationProps {
   hasNextPage: boolean;
   hasPrevPage: boolean;
   total: number;
-  onPageChange: (page: number) => void;
 }
 
-export default function Pagination({ hasNextPage, hasPrevPage, total, onPageChange }: PaginationProps) {
+export default function Pagination({ hasNextPage, hasPrevPage, total }: PaginationProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -21,13 +20,6 @@ export default function Pagination({ hasNextPage, hasPrevPage, total, onPageChan
   const totalPages = Math.ceil(total / per_page);
   const start = (page - 1) * per_page + 1;
   const end = Math.min(page * per_page, total);
-
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, newPage: number, condition: boolean) => {
-    e.preventDefault();
-    if (condition) {
-      onPageChange(newPage);
-    }
-  };
 
   const createPageUrl = (pageNum: number) => {
     const params = new URLSearchParams(searchParams);
@@ -51,7 +43,6 @@ export default function Pagination({ hasNextPage, hasPrevPage, total, onPageChan
             <Link
               key={i}
               href={createPageUrl(i)}
-              onClick={(e) => handleClick(e, i, true)}
               aria-current={page === i ? "page" : undefined}
               className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
                 page === i
@@ -87,7 +78,6 @@ export default function Pagination({ hasNextPage, hasPrevPage, total, onPageChan
         <div className="flex flex-1 justify-between items-center sm:hidden">
           <Link
             href={createPageUrl(page - 1)}
-            onClick={(e) => handleClick(e, page - 1, hasPrevPage)}
             className={`relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
               !hasPrevPage ? "pointer-events-none opacity-50" : ""
             }`}
@@ -104,7 +94,6 @@ export default function Pagination({ hasNextPage, hasPrevPage, total, onPageChan
           </div>
           <Link
             href={createPageUrl(page + 1)}
-            onClick={(e) => handleClick(e, page + 1, hasNextPage)}
             className={`relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 ${
               !hasNextPage ? "pointer-events-none opacity-50" : ""
             }`}
@@ -129,7 +118,6 @@ export default function Pagination({ hasNextPage, hasPrevPage, total, onPageChan
             >
               <Link
                 href={createPageUrl(page - 1)}
-                onClick={(e) => handleClick(e, page - 1, hasPrevPage)}
                 className={`relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
                   !hasPrevPage ? "pointer-events-none opacity-50" : ""
                 }`}
@@ -142,7 +130,6 @@ export default function Pagination({ hasNextPage, hasPrevPage, total, onPageChan
 
               <Link
                 href={createPageUrl(page + 1)}
-                onClick={(e) => handleClick(e, page + 1, hasNextPage)}
                 className={`relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 ${
                   !hasNextPage ? "pointer-events-none opacity-50" : ""
                 }`}

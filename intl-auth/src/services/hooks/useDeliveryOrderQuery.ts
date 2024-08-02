@@ -1,22 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
-import {
-  getDeliveryOrders,
-  getDeliveryOrdersDetail,
-} from "../endpoints/delivery-order";
-import { DeliveryOrderDetailTypes, DeliveryOrderTypes } from "@/types";
+import { getDeliveryOrders, getDeliveryOrdersList } from "../endpoints/delivery-order";
+import { DeliveryOrderContainerTypes, DeliveryOrderTypes } from "@/types";
 
 export const useDeliveryOrdersQuery = () => {
   return useQuery<DeliveryOrderTypes[]>({
     queryKey: ["deliveryOrders"],
     queryFn: getDeliveryOrders,
-  });
+  }); 
 };
 
-export const useDeliveryOrdersDetail = (page: number, per_page: number) => {
-  return useQuery<DeliveryOrderDetailTypes[]>({
-    queryKey: ["deliveryOrders-detail", page, per_page],
-    queryFn: () => getDeliveryOrdersDetail(page, per_page),
+export const useDeliveryOrdersList = (page: number, per_page: number, status?: string) => {
+  return useQuery<DeliveryOrderContainerTypes>({
+    queryKey: ["deliveryOrders-list", page, per_page, status],
+    queryFn: () => getDeliveryOrdersList(page, per_page, status),
     placeholderData: (previousData) => previousData,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchInterval: 3 * 60 * 1000,
+    // staleTime: 5 * 60 * 1000,
   });
 };

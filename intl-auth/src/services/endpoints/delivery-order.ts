@@ -5,11 +5,12 @@ export const getDeliveryOrders = async () => {
   return response.data;
 };
 
-export const getDeliveryOrdersDetail = async (page: number, per_page: number) => {
-  const response = await axios.get("/api/deliveryorder-detail", {
+export const getDeliveryOrdersList = async (page: number, per_page: number, status?: string) => {
+  const response = await axios.get("/api/deliveryorder-list", {
     params: {
       page,
-      per_page
+      per_page,
+      status
     }
   });
   return response.data;

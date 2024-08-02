@@ -45,18 +45,22 @@ export async function GET(request: Request) {
     const totalResponse = await axiosInstance.get("/deliveryorder", {
       params: {
         $filter: filter,
-        $select: "id",
+        $select: "id,status",
       },
     });
 
     if (!response || !totalResponse) {
-      // if (!response) {
       return Response.json({ error: "No data received" }, { status: 404 });
     }
 
+    const statuses = totalResponse.data.map((item: { status: string }) => item.status);
+
     return Response.json(
-      { data: response.data, total: totalResponse.data.length },
-      // { data: response.data },
+      {
+        data: response.data,
+        total: totalResponse.data.length,
+        status: statuses,
+      },
       { status: 200 }
     );
   } catch (error) {

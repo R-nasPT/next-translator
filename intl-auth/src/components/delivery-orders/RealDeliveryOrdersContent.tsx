@@ -24,11 +24,7 @@ export default function DeliveryOrdersContent({
   const [status, setStatus] = useState(initialStatus);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
 
-  const {
-    data: orders,
-    isLoading,
-    isFetching,
-  } = useDeliveryOrdersList(initialPage, initialPerPage, initialStatus);
+  const { data: orders, isLoading, isFetching } = useDeliveryOrdersList(initialPage, initialPerPage, initialStatus);
 
   const handleStatusChange = (newStatus: string) => {
     setStatus(newStatus);
@@ -56,6 +52,7 @@ export default function DeliveryOrdersContent({
       <OrderStatusFilter
         status={status}
         handleStatusChange={handleStatusChange}
+        statusResponse={orders?.status!}
       />
 
       <OrderTable

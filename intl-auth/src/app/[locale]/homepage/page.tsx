@@ -21,6 +21,8 @@ export default function HomePage() {
       <button className="bg-red-400 text-white p-3 rounded-md" onClick={() => signOut()}>Log Out</button>
       <br />
       <LanguageSwitcher />
+      <Image src={logoSrc} fill priority alt={courierName} /> 
+      {/* fill ใช้แทน layout="fill" และ property จะทำให้ภาพถูกโหลดล่วงหน้าและช่วยปรับปรุง LCP ของหน้าเว็บ */}
     </>
   );
 }

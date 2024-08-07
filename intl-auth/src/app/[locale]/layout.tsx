@@ -4,6 +4,7 @@ import { unstable_setRequestLocale } from "next-intl/server";
 import { locales } from "@/i18n.config";
 import Providers from "@/providers";
 import ClientLayout from "@/components/layouts/client-layout.tsx";
+import { DesignModeIndicator } from "@/components/design-mode";
 import "./globals.css";
 
 export function generateStaticParams() {
@@ -35,6 +36,7 @@ export default function LocaleLayout({
         <Providers locale={locale}>
           <ClientLayout>
             {children}
+            <DesignModeIndicator />
           </ClientLayout>
         </Providers>
       </body>

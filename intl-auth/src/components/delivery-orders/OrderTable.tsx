@@ -18,14 +18,7 @@ interface OrderTableProps {
 
 export default function OrderTable({ orders, isLoading, openDrawer, currentStatus }: OrderTableProps) {
   const showCheckboxes = currentStatus !== undefined && currentStatus !== "";
-  const {
-    handleSelectAll,
-    handleSelectItem,
-    isAllSelected,
-    selectedCount,
-    selectedItems,
-    selectedIds,
-  } = useCheckbox(orders);
+  const { handleSelectAll, handleSelectItem, isAllSelected, selectedCount, selectedItems, selectedIds } = useCheckbox(orders);
 
   const prefetchOrderData = usePrefetchOrderId();
 

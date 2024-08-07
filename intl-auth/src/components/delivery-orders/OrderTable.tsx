@@ -7,43 +7,50 @@ import OederListSkeleton from "./OrderListSkeleton";
 import StatusBadge from "./StatusBadge";
 import OrderMobileSkeleton from "./OrderMobileSkeleton";
 import { usePrefetchOrderId } from "@/services";
+import SelectedOrdersSummary from "./SelectedOrdersSummary";
 
 interface OrderTableProps {
   orders: DeliveryOrderListTypes[];
   isLoading: boolean;
   openDrawer: (orderId: string) => void;
+  currentStatus: string | undefined;
 }
 
-export default function OrderTable({ orders, isLoading, openDrawer }: OrderTableProps) {
+export default function OrderTable({ orders, isLoading, openDrawer, currentStatus }: OrderTableProps) {
+  const showCheckboxes = currentStatus !== undefined && currentStatus !== "";
   const {
     handleSelectAll,
     handleSelectItem,
     isAllSelected,
     selectedCount,
     selectedItems,
+    selectedIds,
   } = useCheckbox(orders);
 
-  const prefetchOrderData = usePrefetchOrderId()
+  const prefetchOrderData = usePrefetchOrderId();
 
   return (
     <>
-      {selectedCount > 0 && (
-        <div className="bg-[#eee8fa] py-5 px-3 my-3 lg:my-0">
-          Selected {selectedCount} item(s)
-        </div>
+      {showCheckboxes && selectedCount > 0 && (
+        <SelectedOrdersSummary
+        selectedCount={selectedCount}
+        selectedIds={selectedIds}
+      />
       )}
 
       {/* ----- Desktop ----- */}
       <table className="hidden lg:table w-full text-sm text-[#280d5f] text-left">
         <thead>
           <tr className="border-b border-[#e0e0e0]">
-            <th className="p-1">
-              <Checkbox
-                id="selectAll"
-                checked={isAllSelected}
-                onChange={handleSelectAll}
-              />
-            </th>
+            {showCheckboxes && (
+              <th className="p-1">
+                <Checkbox
+                  id="selectAll"
+                  checked={isAllSelected}
+                  onChange={handleSelectAll}
+                />
+              </th>
+            )}
             <th className="font-normal p-4">Code</th>
             <th className="font-normal p-4">Reference</th>
             <th className="font-normal p-4">Courier</th>
@@ -66,13 +73,15 @@ export default function OrderTable({ orders, isLoading, openDrawer }: OrderTable
                 onMouseEnter={() => prefetchOrderData(order.id)}
                 onClick={() => openDrawer(order.id)}
               >
-                <td className="p-1" onClick={(e) => e.stopPropagation()}>
-                  <Checkbox
-                    id={`row-${order.id}`}
-                    checked={selectedItems[order.id] || false}
-                    onChange={handleSelectItem(order.id)}
-                  />
-                </td>
+                {showCheckboxes && (
+                  <td className="p-1" onClick={(e) => e.stopPropagation()}>
+                    <Checkbox
+                      id={`row-${order.id}`}
+                      checked={selectedItems[order.id] || false}
+                      onChange={handleSelectItem(order.id)}
+                    />
+                  </td>
+                )}
                 <td className="p-4 flex flex-col gap-1 items-center">
                   <StatusBadge status={order.status} />
                   <p className="text-[13px] text-[#7c70ab] whitespace-nowrap">
@@ -88,7 +97,8 @@ export default function OrderTable({ orders, isLoading, openDrawer }: OrderTable
                   <p className="text-[#846eae]">{order.courierTrackingCode}</p>
                 </td>
                 <td className="p-4 text-center">
-                  {order.cod === 0 ? "-" : order.cod} / {order.itemCount}
+                  {order.cod === 0 ? "-" : order.cod} / {order.printCount}
+                  <p>Qty: {order.itemCount}</p>
                 </td>
                 <td className="p-4">
                   <p>{formatDateLong(order.updatedDate)}</p>
@@ -116,17 +126,19 @@ export default function OrderTable({ orders, isLoading, openDrawer }: OrderTable
                 onClick={() => openDrawer(order.id)}
               >
                 <td className="py-4 flex gap-1 md:gap-4">
-                  <div
-                    className="flex justify-center items-center"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Checkbox
-                      id={`row-${order.id}`}
-                      checked={selectedItems[order.id] || false}
-                      onChange={handleSelectItem(order.id)}
-                      size="lg"
-                    />
-                  </div>
+                  {showCheckboxes && (
+                    <div
+                      className="flex justify-center items-center"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Checkbox
+                        id={`row-${order.id}`}
+                        checked={selectedItems[order.id] || false}
+                        onChange={handleSelectItem(order.id)}
+                        size="lg"
+                      />
+                    </div>
+                  )}
                   <div>
                     <span className="text-[#7a6eaa] text-xs">
                       Customer Name

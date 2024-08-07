@@ -23,6 +23,7 @@ export default function DeliveryOrdersContent({
   const [perPage, setPerPage] = useState(initialPerPage);
   const [status, setStatus] = useState(initialStatus);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
 
   const { data: orders, isLoading, isFetching } = useDeliveryOrdersList(initialPage, initialPerPage, initialStatus);
 
@@ -41,6 +42,11 @@ export default function DeliveryOrdersContent({
   const entries = orders?.data || [];
   const totalCount = orders?.total || 0;
 
+  const handleOpenDrawer = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setIsDrawerOpen(true);
+  };
+
   useEffect(() => {
     if (initialPage !== page) setPage(initialPage);
     if (initialPerPage !== perPage) setPerPage(initialPerPage);
@@ -57,9 +63,9 @@ export default function DeliveryOrdersContent({
 
       <OrderTable
         orders={entries}
-        isLoading={isLoading}
-        isFetching={isFetching}
-        openDrawer={() => setIsDrawerOpen(true)}
+        isLoading={isLoading || isFetching}
+        openDrawer={handleOpenDrawer}
+        currentStatus={status}
       />
 
       <Pagination
@@ -71,6 +77,7 @@ export default function DeliveryOrdersContent({
       <DrawerOrderDetail
         isOpen={isDrawerOpen}
         onClose={() => setIsDrawerOpen(false)}
+        orderId={selectedOrderId}
       />
     </>
   );

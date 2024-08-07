@@ -11,7 +11,7 @@ export default function useDesignMode() {
     // ตรวจสอบว่า NEXT_PUBLIC_ENABLE_DESIGN_MODE เป็น true หรือไม่
     const isDesignModeEnabled = process.env.NEXT_PUBLIC_ENABLE_DESIGN_MODE === 'true';
 
-    if (!isDevelopment && !isDesignModeEnabled) {
+    if (!isDevelopment || !isDesignModeEnabled) {
       return; // ไม่ทำงานถ้าไม่ใช่ development mode และไม่ได้เปิดใช้ Design Mode
     }
 

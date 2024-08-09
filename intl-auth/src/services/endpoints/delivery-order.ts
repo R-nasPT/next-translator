@@ -20,3 +20,8 @@ export const getDeliveryOrdersId = async (orderId: string) => {
   const response = await axios.get(`/api/deliveryorder-list/${orderId}`);
   return response.data;
 };
+
+export const printDeliveryOrdersId = async (printId: string[]) => {
+  const response = await axios.post(`/api/deliveryorder-list/print`, { printId });
+  return response.data;
+};

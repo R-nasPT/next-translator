@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getDeliveryOrders,
   getDeliveryOrdersId,
@@ -47,4 +47,32 @@ export const usePrefetchOrderId = () => {
   };
 
   return prefetchOrderData;
+};
+
+export const usePrintDelivery = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (printId: string[]) => printDeliveryOrdersId(printId),
+    onSuccess: (data, variables) => {
+      // อัปเดต cache สำหรับ query ที่เกี่ยวข้อง
+      queryClient.invalidateQueries({ queryKey: ['deliveryOrders-list'] });
+      queryClient.invalidateQueries({ queryKey: ['deliveryOrdersId', variables] });
+
+      // แสดงข้อความสำเร็จหรือทำการ redirect ถ้าจำเป็น
+      console.log('พิมพ์เอกสารสำเร็จ1', data);
+      console.log('พิมพ์เอกสารสำเร็จ2', variables);
+    },
+    onError: (error) => {
+      // จัดการ error
+      console.error('เกิดข้อผิดพลาดในการพิมพ์:', error);
+      // แสดง error message หรือทำการ log
+    },
+    // ตัวเลือกเพิ่มเติม
+    retry: 1, // ลองใหม่ 1 ครั้งถ้าเกิด error
+    onSettled: () => {
+      // ทำงานเมื่อ mutation เสร็จสิ้น ไม่ว่าจะสำเร็จหรือไม่
+      console.log('การพิมพ์เสร็จสิ้น');
+    },
+  });
 };

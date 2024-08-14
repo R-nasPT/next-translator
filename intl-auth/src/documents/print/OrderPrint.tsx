@@ -1,5 +1,5 @@
 import { useCurrentDateTime } from "@/hooks";
-import { useAccountId } from "@/services";
+import { useAccountId, useSkuId } from "@/services";
 import { DeliveryOrderPrint } from "@/types";
 import { ForwardedRef, forwardRef } from "react";
 import Barcode from "react-barcode";
@@ -24,6 +24,14 @@ const OrderPrint = forwardRef<HTMLDivElement, OrderPrintProps>(
     //     },
     //   })),
     // });
+
+        // รวบรวม skuIds ทั้งหมด
+    const allSkuIds = printedData.flatMap((data) =>
+      data.items.map((item) => item.skuId)
+    );
+
+    // ใช้ Hook เพื่อดึงข้อมูล SKU ทั้งหมด
+    const skuQueries = useSkuId(allSkuIds);
 
     return (
       <div ref={ref}>
@@ -80,29 +88,28 @@ const OrderPrint = forwardRef<HTMLDivElement, OrderPrintProps>(
                   </tr>
                 </thead>
                 <tbody>
-                  {data.items.map((item, index: number) => (
-                    <tr key={index}>
-                      <td className="text-left border border-[#e8e8e8] p-2">
-                        {item.internalCode.slice(3)}
-                      </td>
-                      <td className="text-left border border-[#e8e8e8] p-2">
-                        {item.amount}
-                      </td>
-                      <td className="text-left border border-[#e8e8e8] border-r-0 p-2 w-[40%]">
-                        <p>{item.name}</p>
-                        <p>{item.internalCode}</p>
-                      </td>
-                      <td className="text-left border border-[#e8e8e8] border-r-0 p-2 w-[40%]">
-                        <Barcode
-                          value={item.barcode}
-                          width={1.15}
-                          height={40}
-                          margin={0}
-                          displayValue={false}
-                        />
-                      </td>
-                    </tr>
-                  ))}
+                  {data.items.map((item, index: number) => {
+                    const skuQuery = skuQueries.find((q) => q.data && q.data.data?.id === item.skuId);
+                    const bubble = skuQuery?.data.data.properties.IFP?.debitNote?.bubbleA41?.status;
+
+                    return (
+                      <tr key={index}>
+                        <td className="text-left border border-[#e8e8e8] p-2">
+                          {item.internalCode}
+                        </td>
+                        <td className="text-left border border-[#e8e8e8] p-2">
+                          {item.amount}
+                        </td>
+                        <td className="text-left border border-[#e8e8e8] p-2 w-[70%]">
+                          <p>{item.name}</p>
+                          <p>{item.internalCode}</p>
+                        </td>
+                        <td className="text-left border border-[#e8e8e8] p-2">
+                          {bubble ? "ห่อ" : ""}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
               <footer className="p-5 mt-5 border-2 border-black">

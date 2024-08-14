@@ -4,7 +4,7 @@ interface Item {
   id: string;
 }
 
-export default function useCheckbox(items: Item[]) {
+const useCheckbox = (items: Item[]) => {
   const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
 
   const handleSelectAll = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -40,6 +40,10 @@ export default function useCheckbox(items: Item[]) {
     [selectedItems]
   );
 
+  const resetSelection = useCallback(() => {
+    setSelectedItems({});
+  }, []);
+
   return {
     selectedItems,
     handleSelectAll,
@@ -47,5 +51,8 @@ export default function useCheckbox(items: Item[]) {
     isAllSelected,
     selectedCount,
     selectedIds,
+    resetSelection,
   };
 }
+
+export default useCheckbox

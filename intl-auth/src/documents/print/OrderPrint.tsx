@@ -12,9 +12,18 @@ const OrderPrint = forwardRef<HTMLDivElement, OrderPrintProps>(
   ({ printedData }, ref: ForwardedRef<HTMLDivElement>) => {
     const { currentDate, currentTime, seconds } = useCurrentDateTime();
 
-    const accountQueries = useAccountId(
-      printedData.map((data) => data.accountId)
-    );
+    const accountQueries = useAccountId(printedData.map((data) => data.accountId));
+
+     // const accountQueries: UseQueryResult<AccountResponse, Error>[] = useQueries({
+    //   queries: printedData.map((data) => ({
+    //     queryKey: ["accountId", data.accountId],
+    //     queryFn: () => fetchAccountId(data.accountId),
+    //     retry: 1,
+    //     onError: (error: any) => {
+    //       console.error(`Error fetching account ${data.accountId}:`, error);
+    //     },
+    //   })),
+    // });
 
     return (
       <div ref={ref}>

@@ -1,13 +1,14 @@
 "use client";
 import { useCheckbox } from "@/hooks";
-import Checkbox from "../ui/checkbox";
 import { DeliveryOrderListTypes } from "@/types";
 import { formatDateLong, formatTime } from "@/utils";
+import { usePrefetchOrderId } from "@/services";
+import { Checkbox } from "../ui";
 import OederListSkeleton from "./OrderListSkeleton";
 import StatusBadge from "./StatusBadge";
 import OrderMobileSkeleton from "./OrderMobileSkeleton";
-import { usePrefetchOrderId } from "@/services";
 import SelectedOrdersSummary from "./SelectedOrdersSummary";
+import { useEffect } from "react";
 
 interface OrderTableProps {
   orders: DeliveryOrderListTypes[];
@@ -16,19 +17,37 @@ interface OrderTableProps {
   currentStatus: string | undefined;
 }
 
-export default function OrderTable({ orders, isLoading, openDrawer, currentStatus }: OrderTableProps) {
+export default function OrderTable({
+  orders,
+  isLoading,
+  openDrawer,
+  currentStatus,
+}: OrderTableProps) {
   const showCheckboxes = currentStatus !== undefined && currentStatus !== "";
-  const { handleSelectAll, handleSelectItem, isAllSelected, selectedCount, selectedItems, selectedIds } = useCheckbox(orders);
+  const {
+    handleSelectAll,
+    handleSelectItem,
+    isAllSelected,
+    selectedCount,
+    selectedItems,
+    selectedIds,
+    resetSelection,
+  } = useCheckbox(orders);
 
   const prefetchOrderData = usePrefetchOrderId();
+
+  useEffect(() => {
+    resetSelection();
+  }, [currentStatus, resetSelection]);
 
   return (
     <>
       {showCheckboxes && selectedCount > 0 && (
         <SelectedOrdersSummary
-        selectedCount={selectedCount}
-        selectedIds={selectedIds}
-      />
+          selectedCount={selectedCount}
+          selectedIds={selectedIds}
+          status={currentStatus}
+        />
       )}
 
       {/* ----- Desktop ----- */}
@@ -95,7 +114,7 @@ export default function OrderTable({ orders, isLoading, openDrawer, currentStatu
                 </td>
                 <td className="p-4">
                   <p>{formatDateLong(order.updatedDate)}</p>
-                  <p>เวลา {formatTime(order.updatedDate)}</p>
+                  <p>{formatTime(order.updatedDate)} น.</p>
                 </td>
               </tr>
             ))

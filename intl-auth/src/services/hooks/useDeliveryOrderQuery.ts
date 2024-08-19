@@ -5,7 +5,9 @@ import {
   getDeliveryOrdersList,
 } from "../endpoints/delivery-order";
 import {
+  CancelOrderResult,
   DeliveryOrderContainerTypes,
+  DeliveryOrderPrint,
   DeliveryOrderTypes,
   OrderIdTypes,
 } from "@/types";
@@ -49,10 +51,16 @@ export const usePrefetchOrderId = () => {
   return prefetchOrderData;
 };
 
+interface PrintResult {
+  successful: {
+    details: DeliveryOrderPrint[];
+  };
+}
+
 export const usePrintDelivery = () => {
   const queryClient = useQueryClient();
 
-  return useMutation({
+  return useMutation<PrintResult, Error, string[]>({
     mutationFn: (printId: string[]) => printDeliveryOrdersId(printId),
     onSuccess: (data, variables) => {
       // อัปเดต cache สำหรับ query ที่เกี่ยวข้อง
@@ -74,5 +82,25 @@ export const usePrintDelivery = () => {
       // ทำงานเมื่อ mutation เสร็จสิ้น ไม่ว่าจะสำเร็จหรือไม่
       console.log('การพิมพ์เสร็จสิ้น');
     },
+  });
+};
+
+interface CancelOrderParams {
+  orderIds: string[];
+  messageText: string;
+}
+
+export const useCancelDelivery = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<CancelOrderResult, Error, CancelOrderParams>({
+    mutationFn: ({ orderIds, messageText }) => cancelDeliveryOrdersId(orderIds, messageText),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["deliveryOrders-list"] });
+      queryClient.invalidateQueries({
+        queryKey: ["deliveryOrdersId", variables],
+      });
+    },
+    retry: 1,
   });
 };

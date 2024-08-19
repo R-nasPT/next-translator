@@ -25,3 +25,8 @@ export const printDeliveryOrdersId = async (printId: string[]) => {
   const response = await axios.post(`/api/deliveryorder-list/print`, { printId });
   return response.data;
 };
+
+export const cancelDeliveryOrdersId = async (orderIds: string[], messageText: string) => {
+  const response = await axios.post(`/api/deliveryorder-list/cancel`, { orderIds, messageText });
+  return response.data;
+};

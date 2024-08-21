@@ -1,9 +1,20 @@
-import { useAllAccount } from "@/services";
+import { useAccount } from "@/services";
 import { SearchSelectField } from "../ui";
+import { useTranslations } from "next-intl";
 
-export default function OrderSearch() {
-  const { data: account } = useAllAccount();
-  console.log(account);
+interface OrderSearchProps {
+  handleMerchantChange: (newPerPage: string) => void;
+  handleSearchChange: (newSearch: string) => void;
+  handleFieldChange: (newField: string) => void;
+}
+
+export default function OrderSearch({
+  handleMerchantChange,
+  handleSearchChange,
+  handleFieldChange,
+}: OrderSearchProps) {
+  const t = useTranslations("INDEX");
+  const { data: account, isLoading } = useAccount();
   
   const loadOptionsFunction = async (inputValue: string) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -78,26 +89,48 @@ export default function OrderSearch() {
   // };
 
   return (
-    <section className="flex justify-between items-center gap-5">
+    <section className="flex flex-col lg:flex-row justify-between lg:items-center gap-2 lg:gap-5">
       <input
-        className="px-5 py-2 rounded-full border border-[#e0e0e0] focus:outline-none bg-[#fafafa] flex-1"
-        type="text"
-        placeholder="Search"
+        className="px-5 py-2 rounded-full border border-[#7b6a9d] focus:outline-none flex-1"
+        type="search"
+        placeholder={t("ORDER_SEARCH_FIELD")}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            handleSearchChange(e.currentTarget.value);
+          }
+        }}
       />
-      <SearchSelectField
-        className="w-[300px]"
-        name="Select Search"
-        placeholder="Select Search"
-        loadOptions={loadOptionsFunction}
-        rounded="100px"
-      />
-      <SearchSelectField
-        className="w-[300px]"
-        name="merchant"
-        placeholder="merchant"
-        loadOptions={accountOptions}
-        rounded="100px"
-      />
+      {isLoading ? (
+        <div className="bg-slate-200 p-5 flex-1 rounded-full animate-pulse"></div>
+      ) : (
+        <SearchSelectField
+          className="flex-1"
+          name="field"
+          placeholder={t("OTHERS")}
+          options={searchOptions}
+          rounded="100px"
+          padding="1.5px 5px"
+          onChange={(selectedOption) =>
+            handleFieldChange(selectedOption?.value!)
+          }
+        />
+      )}
+      {isLoading ? (
+        <div className="bg-slate-200 p-5 flex-1 rounded-full animate-pulse"></div>
+      ) : (
+        <SearchSelectField
+          className="flex-1"
+          name="merchant"
+          placeholder={isLoading ? "Loading" : t("MERCHANT")}
+          loadOptions={accountOptions}
+          isLoading={isLoading}
+          rounded="100px"
+          padding="1.5px 5px"
+          onChange={(selectedOption) =>
+            handleMerchantChange(selectedOption?.value!)
+          }
+        />
+      )}
     </section>
   );
 }

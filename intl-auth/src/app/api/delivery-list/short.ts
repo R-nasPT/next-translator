@@ -14,6 +14,9 @@ export async function GET(request: Request) {
   const page = parseInt(searchParams.get("page") || "1");
   const perPage = parseInt(searchParams.get("per_page") || "10");
   const status = searchParams.get("status");
+  const merchant = searchParams.get("merchant");
+  const search = searchParams.get("search");
+  const field = searchParams.get("field");
 
   const session = await getSession();
   const axiosInstance = configureAxiosWithToken((session?.user as any)?.token);
@@ -25,8 +28,19 @@ export async function GET(request: Request) {
   startDate.setHours(0, 0, 0, 0);
 
   let filter = `updatedDate ge ${startDate.toISOString()} and updatedDate le ${currentDate.toISOString()}`;
-  if (status) {
-    filter += ` and status eq '${status}'`;
+  let statusFilter = `updatedDate ge ${startDate.toISOString()} and updatedDate le ${currentDate.toISOString()}`;
+  
+  if (status) filter += ` and status eq '${status}'`;
+  
+  if (merchant) {
+    filter += ` and accountId eq '${merchant}'`
+    statusFilter += ` and accountId eq '${merchant}'`
+  };
+
+  if (search) {
+    const searchFields = field ? [field] : ['code', 'reference', 'customerName', 'courier/name'];
+    filter += ` and (${searchFields.map(f => `contains(${f},'${search}')`).join(' or ')})`;
+    statusFilter += ` and (${searchFields.map(f => `contains(${f},'${search}')`).join(' or ')})`;
   }
 
   try {
@@ -34,7 +48,7 @@ export async function GET(request: Request) {
     const paginatedData = await fetchData(axiosInstance, {
       $filter: filter,
       $orderby: "updatedDate desc",
-      $select: "id,accountId,code,reference,customerName,courierTrackingCode,status,courierId,itemCount,printCount,updatedDate",
+      $select: "id,accountId,code,reference,customerName,courierTrackingCode,status,courierId,itemCount,printCount,updatedDate,cod,propertiesJson,note",
       $expand: "account,courier",
       $skip: (page - 1) * perPage,
       $top: perPage,
@@ -44,12 +58,14 @@ export async function GET(request: Request) {
     // Fetch total count
     const totalData = await fetchData(axiosInstance, {
       $filter: filter,
+      $orderby: "updatedDate desc",
       $select: "id",
     });
 
     // Fetch status data
     const statusData = await fetchData(axiosInstance, {
-      $filter: `updatedDate ge ${startDate.toISOString()} and updatedDate le ${currentDate.toISOString()}`,
+      $filter: statusFilter,
+      $orderby: "updatedDate desc",
       $select: "status",
     });
 

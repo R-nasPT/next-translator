@@ -42,7 +42,7 @@ export default function DateFilter({ onDateChange }: DateFilterProps) {
 
   return (
     <Datepicker
-      // showShortcuts
+      showShortcuts
       useRange={false}
       primaryColor={"purple"}
       value={value}

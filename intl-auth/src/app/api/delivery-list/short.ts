@@ -17,18 +17,28 @@ export async function GET(request: Request) {
   const merchant = searchParams.get("merchant");
   const search = searchParams.get("search");
   const field = searchParams.get("field");
+  const startDate = searchParams.get("startDate");
+  const endDate = searchParams.get("endDate");
 
   const session = await getSession();
   const axiosInstance = configureAxiosWithToken((session?.user as any)?.token);
 
-  const currentDate = new Date();
-  // Two Week
-  const startDate = new Date(currentDate);
-  startDate.setDate(currentDate.getDate() - 14);
-  startDate.setHours(0, 0, 0, 0);
+  let filter = '';
+  let statusFilter = '';
 
-  let filter = `updatedDate ge ${startDate.toISOString()} and updatedDate le ${currentDate.toISOString()}`;
-  let statusFilter = `updatedDate ge ${startDate.toISOString()} and updatedDate le ${currentDate.toISOString()}`;
+  if (startDate && endDate) {
+    filter = `updatedDate ge ${new Date(startDate).toISOString()} and updatedDate le ${new Date(endDate).toISOString()}`;
+    statusFilter = filter;
+  } else {
+    // ใช้ logic เดิมสำหรับกรณีที่ไม่มีการระบุวันที่ // Two Week
+    const currentDate = new Date();
+    const twoWeeksAgo = new Date(currentDate);
+    twoWeeksAgo.setDate(currentDate.getDate() - 14);
+    twoWeeksAgo.setHours(0, 0, 0, 0);
+    
+    filter = `updatedDate ge ${twoWeeksAgo.toISOString()} and updatedDate le ${currentDate.toISOString()}`;
+    statusFilter = filter;
+  }
   
   if (status) filter += ` and status eq '${status}'`;
   

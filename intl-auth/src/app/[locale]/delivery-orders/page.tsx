@@ -23,6 +23,8 @@ export default async function DeliveryOrders({
   const merchant = searchParams["merchant"] as string | undefined;
   const search = searchParams["search"] as string | undefined;
   const field = searchParams["field"] as string | undefined;
+  const startDate = searchParams["startDate"] as string | undefined;
+  const endDate = searchParams["endDate"] as string | undefined;
 
   if (!page || !per_page) {
     redirect("/delivery-orders?page=1&per_page=10");
@@ -39,6 +41,8 @@ export default async function DeliveryOrders({
         merchant={merchant}
         search={search}
         field={field}
+        startDate={startDate}
+        endDate={endDate}
       />
 
       {/* <Suspense fallback={<OrderListSkeleton />}> */}

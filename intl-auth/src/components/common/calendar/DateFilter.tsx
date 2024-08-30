@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Datepicker from "react-tailwindcss-datepicker";
 import { useLocale } from "next-intl";
+import { useSearchParams } from "next/navigation";
 
 interface DateFilterProps {
   onDateChange: (dates: [Date | null, Date | null]) => void;
@@ -13,6 +14,10 @@ export default function DateFilter({ onDateChange }: DateFilterProps) {
     startDate: null,
     endDate: null,
   });
+
+  // const searchParams = useSearchParams();
+  // const startDateParam = searchParams.get("startDate");
+  // const endDateParam = searchParams.get("endDate");
 
   const handleDateChange = (newValue: DateValueType) => {
     setValue(newValue);
@@ -46,6 +51,10 @@ export default function DateFilter({ onDateChange }: DateFilterProps) {
       useRange={false}
       primaryColor={"purple"}
       value={value}
+      // value={{
+      //   startDate: startDateParam ? new Date(startDateParam) : null,
+      //   endDate: endDateParam ? new Date(endDateParam) : null,
+      // }}
       onChange={handleDateChange}
       i18n={locale}
       displayFormat="DD/MM/YYYY"

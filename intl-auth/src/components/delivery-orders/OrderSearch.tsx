@@ -1,103 +1,71 @@
 import { useAccount } from "@/services";
-import { SearchSelectField } from "../ui";
+import { SearchInput, SearchSelectField } from "../ui";
 import { useTranslations } from "next-intl";
+import { useState } from "react";
+import { generateOptions } from "@/utils";
+import { useSearchParams } from "next/navigation";
+import DateFilter from "../common/calendar/DateFilter";
 
 interface OrderSearchProps {
   handleMerchantChange: (newPerPage: string) => void;
   handleSearchChange: (newSearch: string) => void;
   handleFieldChange: (newField: string) => void;
+  onDateChange: (dates: [Date | null, Date | null]) => void;
 }
 
 export default function OrderSearch({
   handleMerchantChange,
   handleSearchChange,
   handleFieldChange,
+  onDateChange,
 }: OrderSearchProps) {
   const t = useTranslations("INDEX");
   const { data: account, isLoading } = useAccount();
+  const [searchValue, setSearchValue] = useState<string>("");
+  const searchParams = useSearchParams();
+
+  const searchQuery = searchParams.get("search") || "";
+  const field = searchParams.get("field");
+  const merchant = searchParams.get("merchant");
   
-  const loadOptionsFunction = async (inputValue: string) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+  const searchOptions = [
+    { value: "code", label: "Document Code" },
+    { value: "reference", label: "Reference" },
+    { value: "customerName", label: "Customer Name" },
+    { value: "courier/name", label: "Courier" },
+  ];
 
-    const allOptions = [
-      { value: "option1", label: "Option 1" },
-      { value: "option2", label: "Option 2" },
-      { value: "option3", label: "Option 3" },
-    ];
+  const selectedFieldOption = searchOptions.find(option => option.value === field) || undefined;
 
-    const filteredOptions = allOptions.filter((option) =>
-      option.label.toLowerCase().includes(inputValue.toLowerCase())
-    );
-
-    return filteredOptions;
-  };
-
-  // interface Option {
-  //   value: string;
-  //   label: string;
-  // }
-
-  // const accountOptions = (inputValue: string): Promise<Option[]> => {
-  //   return new Promise((resolve) => {
-  //     // ตรวจสอบว่า data มีค่าหรือไม่
-  //     if (!account) {
-  //       resolve([]);
-  //       return;
-  //     }
-
-  //     // กรองและแปลงข้อมูล
-  //     const filteredOptions = account
-  //       .filter(item => 
-  //         item.name.toLowerCase().includes(inputValue.toLowerCase())
-  //       )
-  //       .map(item => ({
-  //         value: item.id,
-  //         label: item.name
-  //       }));
-
-  //     resolve(filteredOptions);
-  //   });
-  // };
-  
   const accountOptions = async (inputValue: string) => {
-    const filteredOptions = account?.filter(account =>
-      account.name.toLowerCase().includes(inputValue.toLowerCase())
-    ).map(account => ({
-      label: account.name,
-      value: account.id,
-    })) || [];
-
-    return Promise.resolve(filteredOptions);
+    if (!account) return [];
+    return await generateOptions(account, inputValue);
   };
 
-  // const accountOptions = async (inputValue: string) => {
-  //   if (!account || account.length === 0) {
-  //     console.log("No account data available or account is empty");
-  //     return [];
-  //   }
+  const getMerchantLabel = (value: string | null): string => {
+    const merchantMap = account?.reduce((acc, item) => {
+      acc[item.id] = item.name;
+      return acc;
+    }, {} as Record<string, string>);
 
-  //   const allOptions = account.map((acc) => ({
-  //     value: acc.id,
-  //     label: acc.name,
-  //   }));
+    return value && merchantMap ? merchantMap[value] || value : "";
+  };
 
-  //   const filteredOptions = allOptions.filter((option) =>
-  //     option.label.toLowerCase().includes(inputValue.toLowerCase())
-  //   );
-
-  //   return filteredOptions;
-  // };
+  const selectedMerchantOption = merchant
+  ? { value: merchant, label: getMerchantLabel(merchant) }
+  : undefined;
 
   return (
-    <section className="flex flex-col lg:flex-row justify-between lg:items-center gap-2 lg:gap-5">
-      <input
-        className="px-5 py-2 rounded-full border border-[#7b6a9d] focus:outline-none flex-1"
-        type="search"
+    <section className="flex flex-col md:grid md:grid-cols-2 lg:flex lg:flex-row justify-between lg:items-center gap-2 lg:gap-5">
+      <SearchInput
+        icon
         placeholder={t("ORDER_SEARCH_FIELD")}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
-            handleSearchChange(e.currentTarget.value);
-          }
+        value={searchQuery}
+        onChange={(newValue) => setSearchValue(newValue)}
+        onEnterPress={() => handleSearchChange(searchValue)}
+        onClearClick={() => {
+          setSearchValue("");
+          handleSearchChange("");
         }}
       />
       {isLoading ? (
@@ -108,6 +76,7 @@ export default function OrderSearch({
           name="field"
           placeholder={t("OTHERS")}
           options={searchOptions}
+          value={selectedFieldOption}
           rounded="100px"
           padding="1.5px 5px"
           onChange={(selectedOption) =>
@@ -115,6 +84,7 @@ export default function OrderSearch({
           }
         />
       )}
+      <DateFilter onDateChange={onDateChange} />
       {isLoading ? (
         <div className="bg-slate-200 p-5 flex-1 rounded-full animate-pulse"></div>
       ) : (
@@ -124,6 +94,7 @@ export default function OrderSearch({
           placeholder={isLoading ? "Loading" : t("MERCHANT")}
           loadOptions={accountOptions}
           isLoading={isLoading}
+          value={selectedMerchantOption}
           rounded="100px"
           padding="1.5px 5px"
           onChange={(selectedOption) =>

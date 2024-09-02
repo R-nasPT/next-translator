@@ -50,3 +50,10 @@ export function createAxiosInstance(token?: string) {
 
   return axiosInstance;
 }
+
+export const strapiUrl = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_STRAPI_HOST, //<-- ต้องถูกประกาศด้วยคำนำหน้าว่า NEXT_PUBLIC_ หากต้องการให้สามารถเข้าถึงได้จากฝั่งไคลเอนต์
+  headers: {
+    "Content-Type": "application/json",
+  },
+});

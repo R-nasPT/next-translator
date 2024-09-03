@@ -1,13 +1,14 @@
 "use client";
 
-import OrderTable from "./OrderTable";
 import { useRouter } from "@/navigation";
-import { useCallback, useEffect, useState } from "react";
 import { useDeliveryOrdersList } from "@/services";
+import { useCheckbox } from "@/hooks";
+import { useCallback, useEffect, useState } from "react";
+import { Pagination } from "../ui";
+import OrderTable from "./OrderTable";
 import DrawerOrderDetail from "./DrawerOrderDetail";
 import OrderStatusFilter from "./OrderStatusFilter";
 import CancelDialog from "../common/modal/CancelDialog";
-import { Pagination } from "../ui";
 import OrderSearch from "./OrderSearch";
 
 interface DeliveryOrdersContentProps {
@@ -17,6 +18,8 @@ interface DeliveryOrdersContentProps {
   merchant?: string;
   search?: string;
   field?: string;
+  startDate?: string | null;
+  endDate?: string | null;
 }
 
 export default function DeliveryOrdersContent({
@@ -26,6 +29,8 @@ export default function DeliveryOrdersContent({
   merchant: initialMerchant,
   search: initialSearch,
   field: initialField,
+  startDate: initialStartDate,
+  endDate: initialEndDate,
 }: DeliveryOrdersContentProps) {
   const router = useRouter();
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false);
@@ -38,12 +43,23 @@ export default function DeliveryOrdersContent({
     status: initialStatus,
     merchant: initialMerchant,
     search: initialSearch,
-    field: initialField
+    field: initialField,
+    startDate: initialStartDate,
+    endDate: initialEndDate,
   });
 
-  const { data: orders, isLoading, isFetching, refetch } = useDeliveryOrdersList( 
-    initialPage, initialPerPage, initialStatus, initialMerchant, initialSearch, initialField
+  const { data: orders, isLoading, isFetching, refetch } = useDeliveryOrdersList(
+    initialPage, initialPerPage, initialStatus, initialMerchant, initialSearch, initialField,
+    initialStartDate || undefined, initialEndDate || undefined
   );
+
+  const start = (filters.page - 1) * filters.per_page;
+  const end = start + filters.per_page;
+
+  const entries = orders?.data || [];
+  const totalCount = orders?.total || 0;
+
+  const checkboxState = useCheckbox(entries);
 
   const updateURL = useCallback(() => {
     const params = new URLSearchParams();
@@ -53,22 +69,28 @@ export default function DeliveryOrdersContent({
     if (filters.per_page) params.append("per_page", filters.per_page.toString());
     if (filters.status) params.append("status", filters.status);
     if (filters.merchant) params.append("merchant", filters.merchant);
+    if (filters.startDate) params.append("startDate", filters.startDate);
+    if (filters.endDate) params.append("endDate", filters.endDate);
     router.push(`/delivery-orders?${params.toString()}`);
   }, [filters, router]);
 
   const handleChange = (key: keyof typeof filters, value: string | number) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
       [key]: value,
       page: 1,
     }));
   };
 
-  const start = (filters.page - 1) * filters.per_page;
-  const end = start + filters.per_page;
-
-  const entries = orders?.data || [];
-  const totalCount = orders?.total || 0;
+  const handleDateChange = (dates: [Date | null, Date | null]) => {
+    const [startDate, endDate] = dates;
+    setFilters((prev) => ({
+      ...prev,
+      startDate: startDate ? startDate.toISOString() : null,
+      endDate: endDate ? endDate.toISOString() : null,
+      page: 1,
+    }));
+  };
 
   const handleOpenDrawer = (orderId: string) => {
     setSelectedOrderId(orderId);
@@ -91,14 +113,15 @@ export default function DeliveryOrdersContent({
   return (
     <>
       <OrderSearch
-        handleMerchantChange={value => handleChange("merchant", value)}
-        handleSearchChange={value => handleChange("search", value)}
-        handleFieldChange={value => handleChange("field", value)}
+        handleMerchantChange={(value) => handleChange("merchant", value)}
+        handleSearchChange={(value) => handleChange("search", value)}
+        handleFieldChange={(value) => handleChange("field", value)}
+        onDateChange={handleDateChange}
       />
 
       <OrderStatusFilter
         status={filters.status}
-        handleStatusChange={value => handleChange("status", value)}
+        handleStatusChange={(value) => handleChange("status", value)}
         statusResponse={orders?.status!}
       />
 
@@ -108,13 +131,14 @@ export default function DeliveryOrdersContent({
         openDrawer={handleOpenDrawer}
         currentStatus={filters.status}
         openCancel={handleOpenCancel}
+        checkboxState={checkboxState}
       />
 
       <Pagination
         total={totalCount}
         hasNextPage={end < totalCount}
         hasPrevPage={start > 0}
-        onPerPageChange={value => handleChange("per_page", value)}
+        onPerPageChange={(value) => handleChange("per_page", value)}
       />
 
       <DrawerOrderDetail
@@ -125,7 +149,10 @@ export default function DeliveryOrdersContent({
       />
 
       <CancelDialog
-        refetch={refetch}
+        refetch={() => {
+          refetch();
+          checkboxState.resetSelection();
+        }}
         open={openCancel}
         onClose={() => setOpenCancel(false)}
         orderId={cancelOrderId}

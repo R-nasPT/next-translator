@@ -1,8 +1,8 @@
 "use client";
 import { Link, usePathname } from "@/navigation";
+import { useSidebarMenu } from "@/constants";
 import MenuButton from "./menu-button";
-import { useSidebarMenu } from "@/constants/sidebar";
-import Accordion from "@/components/common/accordion";
+import Accordion from "@/components/ui/accordion";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -35,22 +35,22 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     <aside
       className={`
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          fixed inset-y-0 left-0 z-50 w-72 lg:w-[210px] bg-white shadow-lg transition-transform duration-300 ease-in-out
-          lg:relative lg:translate-x-0
+          fixed inset-y-0 left-0 z-50 w-72 lg:w-[210px] bg-white shadow-lg transition-transform duration-500 ease-in-out
         `}
     >
       <header className="py-4 lg:py-6 px-4 text-[#280d5f] text-lg font-semibold">
-        Tabshier Hub
+        Siam Outlet
       </header>
       <MenuButton />
 
-      <section className="overflow-y-auto max-h-[calc(100vh-100px)] pb-14 hide-scrollbar text-sm">
+      <section className="overflow-y-auto max-h-[calc(100vh-100px)] pb-14 text-sm hide-scrollbar lg:show-scrollbar">
         <ul className="w-full">
           {mainMenu.map((menu) => renderMenuItem(menu))}
           {subMenu.map((menu) => (
             <Accordion
               key={menu.key}
-              className="pl-5 pr-2 py-3 hover:bg-gray-100"
+              className="pl-5 pr-4 lg:pr-2 py-3 hover:bg-gray-100"
+              arrow
               title={
                 <div className="flex items-center gap-5">
                   <menu.icon className="w-6 h-6 text-[#783cf1]" /> {menu.label}

@@ -35,6 +35,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  // ถ้าจอใหญ่ค่าเริ่มต้นเป็น true คือ ให้เปิด sidebar ไว้ เป็นค่าเริ่มต้น
   useEffect(() => {
     const handleResize = () => {
       setIsSidebarOpen(window.innerWidth >= 1024);

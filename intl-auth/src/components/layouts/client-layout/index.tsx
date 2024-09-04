@@ -1,11 +1,12 @@
 "use client";
 
 import { ReactNode, useEffect, useRef, useState } from "react";
+import { usePathname } from "@/navigation";
+import { publicRoutes, showHeaderNavPaths, showNavbarPaths } from "@/routes";
+import { useVisibility } from "@/hooks";
 import Navbar from "../navbar";
 import Sidebar from "../sidebar";
-import { usePathname } from "@/navigation";
-import { publicRoutes, showNavbarPaths } from "@/routes";
-import { useVisibility } from "@/hooks";
+import HeaderNav from "../header-nav";
 
 export default function ClientLayout({ children }: { children: ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -15,6 +16,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
 
   const isPublicRoute = useVisibility(pathname, publicRoutes);
   const shouldShowNavbar = useVisibility(pathname, showNavbarPaths);
+  const shouldShowHeaderNav = useVisibility(pathname, showHeaderNavPaths);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -65,6 +67,12 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
       >
         {shouldShowNavbar && (
           <Navbar
+            isScrolled={isScrolled}
+            onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          />
+        )}
+        {shouldShowHeaderNav && (
+          <HeaderNav
             isScrolled={isScrolled}
             onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
           />

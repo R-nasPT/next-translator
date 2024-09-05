@@ -69,12 +69,14 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
           <Navbar
             isScrolled={isScrolled}
             onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            isSidebarOpen={isSidebarOpen}
           />
         )}
         {shouldShowHeaderNav && (
           <HeaderNav
             isScrolled={isScrolled}
             onMenuClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            isSidebarOpen={isSidebarOpen}
           />
         )}
         <main className="flex-1 px-7">{children}</main>

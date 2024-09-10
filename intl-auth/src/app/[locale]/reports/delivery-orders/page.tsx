@@ -2,27 +2,16 @@
 
 import { SearchSelectField } from "@/components/ui";
 import { useAccount, useReportOrders } from "@/services";
-import {
-  exportToFile,
-  formatDateShort,
-  formatTimeWithSuffix,
-  generateOptions,
-} from "@/utils";
+import { exportToFile, formatDateShort, formatTimeWithSuffix, generateOptions } from "@/utils";
 import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import OrderReportSkeleton from "@/components/reports/OrderReportSkeleton";
 import dynamic from "next/dynamic";
 
-const ClientDateFilter = dynamic(
-  () => import("@/components/common/calendar/DateFilter"),
-  { ssr: false }
-);
+const ClientDateFilter = dynamic(() => import("@/components/common/calendar/DateFilter"), { ssr: false });
 
 export default function DeliveryReport() {
-  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
-    null,
-    null,
-  ]);
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
   const [merchant, setMerchant] = useState<string | null>(null);
   const [filterParams, setFilterParams] = useState<{
     startDate: string | null;

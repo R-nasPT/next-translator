@@ -1,5 +1,5 @@
 import Datepicker from "react-tailwindcss-datepicker";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useSearchParams } from "next/navigation";
 
 interface DateFilterProps {
@@ -8,6 +8,7 @@ interface DateFilterProps {
   endDate?: Date | null;
   enableSearchParams?: boolean;
   rounded?: "md" | "lg" | "xl" | "2xl" | "3xl" | "full";
+  showShortcuts?: boolean;
 }
 type DateValueType = { startDate: Date | null; endDate: Date | null } | null;
 
@@ -17,7 +18,9 @@ export default function DateFilter({
   endDate: propEndDate,
   enableSearchParams = false,
   rounded,
+  showShortcuts,
 }: DateFilterProps) {
+  const t = useTranslations("CALENDAR");
   const locale = useLocale();
   const searchParams = useSearchParams();
 
@@ -58,11 +61,12 @@ export default function DateFilter({
     xl: "rounded-r-xl",
     "2xl": "rounded-r-2xl",
     "3xl": "rounded-r-3xl",
-    "full": "rounded-r-full",
+    full: "rounded-r-full",
   };
 
   return (
     <Datepicker
+      showShortcuts={showShortcuts}
       useRange={false}
       primaryColor={"purple"}
       value={{
@@ -79,6 +83,15 @@ export default function DateFilter({
       toggleClassName={`absolute bg-purple-400 text-white right-0 h-full px-3 text-gray-400 focus:outline-none disabled:opacity-40 disabled:cursor-not-allowed ${
         roundedClasses[rounded || ""]
       }`}
+      configs={{
+        shortcuts: {
+          today: t("TODAY"),
+          yesterday: t("YESTERDAY"),
+          past: (period) => t("LAST_DAYS", { period }),
+          currentMonth: t("THIS_MONTH"),
+          pastMonth: t("LAST_MONTH"),
+        },
+      }}
     />
   );
 }

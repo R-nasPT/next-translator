@@ -14,16 +14,14 @@ interface OrderFilterReportProps {
   }) => void;
 }
 
-const ClientDateFilter = dynamic(
-  () => import("@/components/common/calendar/DateFilter"),
-  { ssr: false }
-);
+const ClientDateFilter = dynamic(() => import("@/components/common/calendar/DateFilter"), { ssr: false });
 
-export default function OrderFilterReport({ onSubmit }: OrderFilterReportProps) {
+export default function OrderFilterReport({
+  onSubmit,
+}: OrderFilterReportProps) {
   const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
   const [merchant, setMerchant] = useState<string | null>(null);
   const [filterConditions, setFilterConditions] = useState<FilterCondition[]>([]);
-  const [showFilters, setShowFilters] = useState(false);
 
   const t = useTranslations();
 
@@ -52,15 +50,10 @@ export default function OrderFilterReport({ onSubmit }: OrderFilterReportProps) 
 
   const addFilterCondition = () => {
     setFilterConditions([...filterConditions, { id: Date.now().toString(), field: '', value: '' }]);
-    setShowFilters(true);
   };
 
   const removeFilterCondition = (id: string) => {
-    const updatedConditions = filterConditions.filter(condition => condition.id !== id);
-    setFilterConditions(updatedConditions);
-    if (updatedConditions.length === 0) {
-      setShowFilters(false);
-    }
+    setFilterConditions(filterConditions.filter(condition => condition.id !== id));
   };
 
   const updateFilterCondition = (id: string, field: 'field' | 'value', newValue: string) => {
@@ -95,57 +88,57 @@ export default function OrderFilterReport({ onSubmit }: OrderFilterReportProps) 
           />
         </div>
         <div className="p-5 border border-[#e0e0e0] rounded-3xl">
-          <p className="mb-3 capitalize">{t('INDEX.CONDITION')}</p>
-          {showFilters &&
-            filterConditions.map((condition, index) => (
-              <>
-                <div key={condition.id} className="grid lg:flex gap-3">
-                  <SearchSelectField
-                    className="flex-1"
-                    name={`field-${condition.id}`}
-                    placeholder={t("INDEX.OTHERS")}
-                    options={searchOptions}
-                    padding="1.5px 5px"
-                    value={searchOptions.find(
-                      (option) => option.value === condition.field
-                    )}
-                    onChange={(selectedOption) =>
-                      updateFilterCondition(
-                        condition.id,
-                        "field",
-                        selectedOption ? selectedOption.value : ""
-                      )
-                    }
-                  />
-                  <InputField
-                    wrapperStyles="flex-1"
-                    className="py-2"
-                    labelClassName="top-[8px]"
-                    name={`filter-${condition.id}`}
-                    placeholder="Value to filter"
-                    value={condition.value}
-                    onChange={(value) =>
-                      updateFilterCondition(condition.id, "value", value)
-                    }
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeFilterCondition(condition.id)}
-                    className="px-3 py-1 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors duration-300 uppercase"
-                  >
-                    - {t('BUTTON.DEL')}
-                  </button>
-                </div>
-                {index < filterConditions.length - 1 && (
-                  <hr className="border border-[#e0e0e0] my-5" />
-                )}
-              </>
-            ))}
+          <p className="mb-3 capitalize">{t("INDEX.CONDITION")}</p>
+          {filterConditions.map((condition, index) => (
+            <>
+              <div key={condition.id} className="grid lg:flex gap-3">
+                <SearchSelectField
+                  className="flex-1"
+                  name={`field-${condition.id}`}
+                  placeholder={t("INDEX.OTHERS")}
+                  options={searchOptions}
+                  padding="1.5px 5px"
+                  value={searchOptions.find(
+                    (option) => option.value === condition.field
+                  )}
+                  onChange={(selectedOption) =>
+                    updateFilterCondition(
+                      condition.id,
+                      "field",
+                      selectedOption ? selectedOption.value : ""
+                    )
+                  }
+                />
+                <InputField
+                  wrapperStyles="flex-1"
+                  className="py-2"
+                  labelClassName="top-[8px]"
+                  name={`filter-${condition.id}`}
+                  placeholder="Value to filter"
+                  value={condition.value}
+                  onChange={(value) =>
+                    updateFilterCondition(condition.id, "value", value)
+                  }
+                />
+                <button
+                  type="button"
+                  onClick={() => removeFilterCondition(condition.id)}
+                  className="px-3 py-1 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors duration-300 uppercase"
+                >
+                  - {t("BUTTON.DEL")}
+                </button>
+              </div>
+              {index < filterConditions.length - 1 && (
+                <hr className="border border-[#e0e0e0] my-5" />
+              )}
+            </>
+          ))}
           <button
+            type="button"
             onClick={addFilterCondition}
             className="mt-3 border border-[#7649d9] text-[#7649d9] px-2 py-1 rounded-xl hover:bg-[#e9deff] transition-colors duration-300 uppercase"
           >
-            + {t('BUTTON.ADD')}
+            + {t("BUTTON.ADD")}
           </button>
         </div>
         <div className="flex gap-2">
@@ -158,7 +151,7 @@ export default function OrderFilterReport({ onSubmit }: OrderFilterReportProps) 
             type="submit"
             disabled={!dateRange[0] || !dateRange[1]}
           >
-            {t('BUTTON.CREATE_PREVIEW')}
+            {t("BUTTON.CREATE_PREVIEW")}
           </button>
         </div>
       </form>

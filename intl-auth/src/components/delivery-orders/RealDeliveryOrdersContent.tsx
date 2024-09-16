@@ -74,6 +74,15 @@ export default function DeliveryOrdersContent({
     router.push(`/delivery-orders?${params.toString()}`);
   }, [filters, router]);
 
+  // แบบที่ 2
+  // const updateURL = useCallback(() => {
+  //   const params = new URLSearchParams();
+  //   Object.entries(filters).forEach(([key, value]) => {
+  //     if (value) params.append(key, value.toString());
+  //   });
+  //   router.push(`/delivery-orders?${params.toString()}`);
+  // }, [filters, router]);
+
   const handleChange = (key: keyof typeof filters, value: string | number) => {
     setFilters((prev) => ({
       ...prev,

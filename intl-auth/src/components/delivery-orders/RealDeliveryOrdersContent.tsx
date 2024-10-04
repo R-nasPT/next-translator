@@ -60,28 +60,32 @@ export default function DeliveryOrdersContent({
   const totalCount = orders?.total || 0;
 
   const checkboxState = useCheckbox(entries);
+  const isUpdateAllowed = useIsUpdateAllowedPage()
 
-  const updateURL = useCallback(() => {
-    const params = new URLSearchParams();
-    if (filters.search) params.append("search", filters.search);
-    if (filters.field) params.append("field", filters.field);
-    if (filters.page) params.append("page", filters.page.toString());
-    if (filters.per_page) params.append("per_page", filters.per_page.toString());
-    if (filters.status) params.append("status", filters.status);
-    if (filters.merchant) params.append("merchant", filters.merchant);
-    if (filters.startDate) params.append("startDate", filters.startDate);
-    if (filters.endDate) params.append("endDate", filters.endDate);
-    router.push(`/delivery-orders?${params.toString()}`);
-  }, [filters, router]);
-
-  // แบบที่ 2
+  // แบบที่ 1
   // const updateURL = useCallback(() => {
   //   const params = new URLSearchParams();
-  //   Object.entries(filters).forEach(([key, value]) => {
-  //     if (value) params.append(key, value.toString());
-  //   });
+  //   if (filters.search) params.append("search", filters.search);
+  //   if (filters.field) params.append("field", filters.field);
+  //   if (filters.page) params.append("page", filters.page.toString());
+  //   if (filters.per_page) params.append("per_page", filters.per_page.toString());
+  //   if (filters.status) params.append("status", filters.status);
+  //   if (filters.merchant) params.append("merchant", filters.merchant);
+  //   if (filters.startDate) params.append("startDate", filters.startDate);
+  //   if (filters.endDate) params.append("endDate", filters.endDate);
   //   router.push(`/delivery-orders?${params.toString()}`);
   // }, [filters, router]);
+
+  // แบบที่ 2
+  const updateURL = useCallback(() => {
+    if (isUpdateAllowed) { //<-- กันไม่ให้เพิ่ม url ที่หน้าอื่น
+    const params = new URLSearchParams();
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) params.append(key, value.toString());
+    });
+    router.push(`/delivery-orders?${params.toString()}`);
+    }
+  }, [filters, router]);
 
   const handleChange = (key: keyof typeof filters, value: string | number) => {
     setFilters((prev) => ({

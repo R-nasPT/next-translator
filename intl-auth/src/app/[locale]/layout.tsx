@@ -36,6 +36,7 @@ export default function LocaleLayout({
         <Providers locale={locale}>
           <ClientLayout>
             {children}
+            {modal}
             <DesignModeIndicator />
           </ClientLayout>
         </Providers>

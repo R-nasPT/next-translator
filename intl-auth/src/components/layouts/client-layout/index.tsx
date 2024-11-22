@@ -17,6 +17,15 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
   const isPublicRoute = useVisibility(pathname, publicRoutes);
   const shouldShowNavbar = useVisibility(pathname, showNavbarPaths);
   const shouldShowHeaderNav = useVisibility(pathname, showHeaderNavPaths);
+  
+  //เพิ่ม Effect ใหม่เพื่อ reset scroll state เมื่อมีการเปลี่ยนหน้า
+  //รีเซ็ตสถานะการเลื่อนเมื่อชื่อเส้นทางเปลี่ยนแปลง
+  useEffect(() => {
+    setIsScrolled(false);
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTop = 0;
+    }
+  }, [pathname]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,7 +44,7 @@ export default function ClientLayout({ children }: { children: ReactNode }) {
         mainContent.removeEventListener("scroll", handleScroll);
       }
     };
-  }, []);
+  }, [pathname]); //เพิ่ม pathname เป็น dependency ใน scroll effect
 
   // ถ้าจอใหญ่ค่าเริ่มต้นเป็น true คือ ให้เปิด sidebar ไว้ เป็นค่าเริ่มต้น
   useEffect(() => {

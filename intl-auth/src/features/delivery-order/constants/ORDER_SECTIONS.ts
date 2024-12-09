@@ -6,30 +6,37 @@ import DocumentHistorySection from "../components/DocumentHistorySection";
 import EditOrderHistorySection from "../components/EditOrderHistorySection";
 import FulfillmentsSection from "../components/FulfillmentsSection";
 
-export const ORDER_SECTIONS = [
+type SectionComponent = React.ComponentType<any>;
+
+interface SectionConfig {
+  Component: SectionComponent;
+  props: (order: OrderIdTypes) => Record<string, any>;
+}
+
+export const ORDER_SECTIONS: SectionConfig[] = [
   {
     Component: AttachmentSection,
-    props: (order: OrderIdTypes) => ({ attachments: order?.attachments }),
+    props: (order) => ({ attachments: order?.attachments }),
   },
   {
     Component: DocumentHistorySection,
-    props: (order: OrderIdTypes) => ({ id: order?.id }),
+    props: (order) => ({ id: order?.id }),
   },
   {
     Component: EditOrderHistorySection,
-    props: (order: OrderIdTypes) => ({ id: order?.id }),
+    props: (order) => ({ id: order?.id }),
   },
   {
     Component: DebitNoteSection,
-    props: (order: OrderIdTypes) => ({ id: order?.id }),
+    props: (order) => ({ id: order?.id }),
   },
   {
     Component: ConnectionHistorySection,
-    props: (order: OrderIdTypes) => ({ id: order?.id }),
+    props: (order) => ({ id: order?.id }),
   },
   {
     Component: FulfillmentsSection,
-    props: (order: OrderIdTypes) => ({ id: order?.id }),
+    props: (order) => ({ id: order?.id }),
   },
   // ---- แบบรับหลายๆ props ----
   { 

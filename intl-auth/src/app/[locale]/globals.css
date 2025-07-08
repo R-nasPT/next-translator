@@ -1,3 +1,104 @@
+
+/* ---------------- tailwind v4 ----------------- */
+@import 'tailwindcss';
+
+/* 
+  JavaScript config files are still supported for backward compatibility, 
+  but they are no longer detected automatically in v4. 
+*/
+@config "../../../tailwind.config.ts";
+.opacity-1 {
+  opacity: 100%;
+}
+
+@theme {
+  --color-pale-gray: #dedede;
+  --color-pearl-gray: #e0e0e0;
+  --color-royal-purple: #6134bd;
+  --color-lavender-mist: #7a6eaa;
+  --color-midnight-indigo: #280d5f;
+}
+
+@utility hide-scrollbar {
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@utility show-scrollbar {
+  &::-webkit-scrollbar {
+    display: block;
+  }
+
+  -ms-overflow-style: auto;
+  scrollbar-width: auto;
+}
+
+@utility rm-arrow-spin {
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &[type='number'] {
+    -moz-appearance: textfield;
+  }
+}
+
+@utility transition-smooth {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+@utility container-wrapper {
+  background-color: white;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+  margin-bottom: 1.25rem;
+}
+
+@utility gentle-frame {
+  border: 1px solid rgb(229, 231, 235);
+  box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.2);
+}
+
+@utility floating-box {
+  @apply rounded-xl bg-gray-50 shadow-xs transition-shadow duration-200 hover:shadow;
+}
+
+@layer utilities {
+  *::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #fafafa;
+    border-radius: 10px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background: #a49cc4;
+    border-radius: 5px;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background: #7f75a8;
+  }
+}
+
+/* ---------------- tailwind v3 ----------------- */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

@@ -5,20 +5,22 @@ export async function GET(
   request: Request,
   { params }: { params: { accountId: string } }
 ) {
-  const { accountId } = params;
-  try {
-    const session = await getSession();
-    const axiosInstance = configureAxiosWithToken(
-      (session?.user as any)?.token
-    );
+   const { accountId } = await params;
+  
+  const token = await getIdToken(request);
+  const httpService = configureHttpServiceWithToken(token!);
 
-    const response = await axiosInstance.get(`/account/${accountId}`);
+  const response = await httpService.get(`/account/${accountId}`);
 
+  if (response instanceof Response) {
     return Response.json({
-      data: response.data,
-    });
-  } catch (error) {
-    console.error("Error in GET function:", error);
-    return Response.json({ error: "Internal Server Error" }, { status: 500 });
+        error: response,
+        data: null,
+      }, { status: response.status }
+    );
   }
+
+  return Response.json({
+    data: response.data,
+  }, { status: response.status });
 }

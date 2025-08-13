@@ -1,8 +1,9 @@
-import createMiddleware from "next-intl/middleware";
-import { localePrefix, locales } from "./i18n.config";
-import { NextRequest } from "next/server";
-import NextAuth from "next-auth";
-import authConfig from "./auth.config";
+import type { NextRequest } from 'next/server';
+import { publicRoutes } from './routes';
+import { getAuthToken } from './lib/auth-token';
+import createMiddleware from 'next-intl/middleware';
+import NextAuth from 'next-auth';
+import authConfig from './auth.config';
 
 const publicPages = ["/"];
 
@@ -14,41 +15,49 @@ const intlMiddleware = createMiddleware({
 
 const { auth } = NextAuth(authConfig);
 
-const authMiddleware = auth((req) => {
+const authMiddleware = auth(req => {
   const isLoggedIn = !!req?.auth;
 
   if (!isLoggedIn) {
-    return Response.redirect(new URL("/", req.nextUrl));
+    const fullPath = req.nextUrl.pathname;
+    const searchParams = req.nextUrl.search;
+    const currentPath = fullPath.replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
+    
+    const callbackUrl = encodeURIComponent(`${currentPath}${searchParams}`);
+    const loginUrl = new URL(`/`, req.nextUrl);
+    loginUrl.searchParams.set('callbackUrl', callbackUrl);
+
+    return Response.redirect(loginUrl);
   }
 
   if (isLoggedIn) {
-    return intlMiddleware(req);
+    return handleI18nRouting(req);
   }
-});
+}) as NextAuthMiddleware;
 
-export default function middleware(req: NextRequest) {
-  const token = req.cookies.get("authjs.session-token");
-  const lang = req.nextUrl.pathname.split("/")[1] || "th";
+export default async function middleware(req: NextRequest) {
+  const token = await getAuthToken(req);
+  const locale = req.nextUrl.pathname.split('/')[1] || 'th';
   const publicPathnameRegex = RegExp(
-    `^(/(${locales.join("|")}))?(${publicPages
-      .flatMap((p) => (p === "/" ? ["", "/"] : p))
-      .join("|")})/?$`,
-    "i"
+    `^(/(${locales.join('|')}))?(${publicRoutes
+      .flatMap(p => (p === '/' ? ['', '/'] : p))
+      .join('|')})/?$`,
+    'i'
   );
 
   const isPublicPage = publicPathnameRegex.test(req.nextUrl.pathname);
 
   if (token && isPublicPage) {
-    return Response.redirect(new URL(`/${lang}/homepage`, req.nextUrl));
+    return Response.redirect(new URL(`/${locale}/dashboard`, req.nextUrl));
   }
 
   if (isPublicPage) {
-    return intlMiddleware(req);
+    return handleI18nRouting(req);
   } else {
-    return (authMiddleware as any)(req);
+    return authMiddleware(req);
   }
 }
 
 export const config = {
-  matcher: ["/", "/(th|en)/:path*"],
+  matcher: ['/((?!api|trpc|_next|_vercel|.*\\..*).*)'],
 };

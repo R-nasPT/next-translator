@@ -1,22 +1,32 @@
-import Login from "@/components/auth/login";
-import { getTranslations } from "next-intl/server";
-import { redirect } from "next/navigation";
+import Login from '@/features/auth/components/Login';
 
-export default async function RootPage({
-  params,
-  searchParams,
-}: {
-  params: { locale: string };
-  searchParams: { page?: string };
-}) {
-  // const t = await getTranslations("INDEX");
-  if (!searchParams.page || searchParams.page !== "login") {
-    redirect(`/${params.locale}/?page=login`);
+interface LoginPageProps {
+  searchParams: Promise<{ callbackUrl?: string }>;
+}
+
+const getCallbackUrl = (callbackUrlParam?: string): string => {
+  if (!callbackUrlParam) return '/dashboard';
+
+  try {
+    const decodedUrl = decodeURIComponent(callbackUrlParam);
+
+    if (decodedUrl.startsWith('/')) {
+      return decodedUrl;
+    }
+
+    if (typeof window !== 'undefined') {
+      const url = new URL(decodedUrl, window.location.origin);
+      return url.origin === window.location.origin ? decodedUrl : '/dashboard';
+    }
+
+    return '/dashboard';
+  } catch {
+    return '/dashboard';
   }
+};
 
-  return (
-    <>
-      <Login />
-    </>
-  );
+export default async function RootPage({ searchParams }: LoginPageProps) {
+  const params = await searchParams;
+  const callbackUrl = getCallbackUrl(params.callbackUrl);
+  return <Login callbackUrl={callbackUrl} />;
 }
